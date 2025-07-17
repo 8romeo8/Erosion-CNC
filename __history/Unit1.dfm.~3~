@@ -1,0 +1,47 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  BorderStyle = bsNone
+  Caption = 'Form1'
+  ClientHeight = 768
+  ClientWidth = 1280
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  WindowState = wsMaximized
+  PixelsPerInch = 96
+  TextHeight = 13
+  object ToolPath: TPanel
+    Left = 8
+    Top = 8
+    Width = 825
+    Height = 609
+    TabOrder = 0
+  end
+  object Speed: TPanel
+    Left = 8
+    Top = 632
+    Width = 305
+    Height = 128
+    TabOrder = 1
+  end
+  object Xdyvider: TPanel
+    Left = 336
+    Top = 632
+    Width = 329
+    Height = 57
+    TabOrder = 2
+  end
+  object Ydyvider: TPanel
+    Left = 336
+    Top = 703
+    Width = 329
+    Height = 57
+    Caption = 'Panel3'
+    TabOrder = 3
+  end
+end
