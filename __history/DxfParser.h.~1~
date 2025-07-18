@@ -1,0 +1,30 @@
+#ifndef DXF_PARSER_H
+#define DXF_PARSER_H
+
+#include <vector>
+#include <string>
+#include <fstream>
+
+// Структура для геометрических примитивов
+struct P {
+    double x1, y1;  // Начальная точка
+    double x2, y2;  // Конечная точка
+    double i, j;    // Центр дуги (относительно начальной точки)
+    char lineOrCircle; // '1'-линия, '2'-дуга, '3'-окружность
+};
+
+class DxfParser {
+public:
+    void parse(const std::string& filePath, std::vector<P>* ToolDraw);
+
+private:
+    void trim(std::string& str);
+    void handleSection(std::ifstream& file, bool& inEntities, bool& inBlock);
+    void handleLine(std::ifstream& file, std::vector<P>* ToolDraw);
+    void handleArc(std::ifstream& file, std::vector<P>* ToolDraw);
+    void handleCircle(std::ifstream& file, std::vector<P>* ToolDraw);
+    void handleLwPolyline(std::ifstream& file, std::vector<P>* ToolDraw);
+    double safeStod(const std::string& str);
+};
+
+#endif // DXF_PARSER_H

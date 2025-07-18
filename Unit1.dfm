@@ -402,6 +402,15 @@ object Form1: TForm1
     Color = clWhite
     ParentBackground = False
     TabOrder = 0
+    object Memo1: TMemo
+      Left = 438
+      Top = 27
+      Width = 475
+      Height = 398
+      Lines.Strings = (
+        'Memo1')
+      TabOrder = 0
+    end
   end
   object Speed: TPanel
     Left = 8
@@ -799,6 +808,7 @@ object Form1: TForm1
     ParentFont = False
     TabOrder = 9
     TabStop = False
+    OnClick = BitBtn3Click
   end
   object BitBtn4: TBitBtn
     Left = 992
@@ -959,5 +969,13 @@ object Form1: TForm1
     ParentFont = False
     TabOrder = 19
     TabStop = False
+  end
+  object OpenDialog1: TOpenDialog
+    DefaultExt = '.CNC'
+    Filter = '*.DXF|*.DXF|*.Tap|*.tap'
+    OptionsEx = [ofExNoPlacesBar]
+    Title = 'Open GCode.CNC'
+    Left = 983
+    Top = 263
   end
 end

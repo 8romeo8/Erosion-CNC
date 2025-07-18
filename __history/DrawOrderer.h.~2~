@@ -1,0 +1,40 @@
+#ifndef DRAW_ORDERER_H
+#define DRAW_ORDERER_H
+/* 18.07.2025г      8romeo8@list.ru       (+79780592624)
+	Класс призван производить сортировко определенным образом.
+
+	класс, который будет упорядочивать элементы
+	из `vector<DxfPos>` в `vector<DrawStruct>` по принципу соединения концов.
+
+	Своего рода обход по траектории от некоторой точки
+	По умолчанию точка входа поиска стыков являтся первый элемент масива.
+    От него начинается построение поиска стыков.
+*/
+#include "DxfParser.h"  // Для доступа к DxfPos
+#include <vector>
+
+class DrawOrderer {
+public:
+    // Структура для хранения упорядоченных элементов
+    struct DrawStruct {
+        double x1, y1;
+        double x2, y2;
+        double i, j;
+        char type;
+    };
+
+    // Конструктор, принимающий исходные данные
+    DrawOrderer(const std::vector<DxfPos>& source);
+
+    // Основной метод упорядочивания
+    std::vector<DrawStruct> createOrderedPath();
+
+private:
+    const std::vector<DxfPos>& m_source;  // Исходные данные
+
+    // Вспомогательные функции
+    bool isEqual(double a, double b) const;
+    DrawStruct convertToDrawStruct(const DxfPos& seg) const;
+};
+
+#endif // DRAW_ORDERER_H

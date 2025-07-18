@@ -9,6 +9,7 @@
 #include <Vcl.Forms.hpp>
 #include <Vcl.ExtCtrls.hpp>
 #include <Vcl.Buttons.hpp>
+#include <Vcl.Dialogs.hpp>
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {
@@ -54,7 +55,20 @@ __published:	// IDE-managed Components
 	TPanel *Panel10;
 	TBitBtn *BitBtn12;
 	TBitBtn *BitBtn13;
+	TMemo *Memo1;
+	TOpenDialog *OpenDialog1;
+	void __fastcall BitBtn3Click(TObject *Sender);
 private:	// User declarations
+	struct St
+	{
+		unsigned 	__int64 X;   //Локальная координата
+		unsigned	__int64 Y;
+		unsigned	__int64 mX;  //Машинная координата
+		unsigned	__int64 mY;
+
+		unsigned    __int64 thisPoin; //Текущая выполняемая точка
+	};
+    St Stanok;
 public:		// User declarations
 	__fastcall TForm1(TComponent* Owner);
 };
