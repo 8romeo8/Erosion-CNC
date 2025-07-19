@@ -20,7 +20,7 @@ public:
         double x1, y1;
         double x2, y2;
         double i, j;
-        char type;
+        int Type;
     };
 
     //  онструктор, принимающий исходные данные

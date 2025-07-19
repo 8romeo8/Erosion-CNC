@@ -7,6 +7,7 @@
 
 #include "DxfParser.h"   // Парсер dxf
 #include "DrawOrderer.h" //Сортировка по стыкам
+#include "GraphicsBuilder.h"
 
 #include <fstream>
 #include <string>
@@ -27,14 +28,18 @@ TForm1 *Form1;
 
 //Обьвяим глобальные данные
 std::vector<DxfPos> ToolDrawConvertDXF;  //Суда положу данные взятые из загруженного файла DXF
+DrawOrderer *orderer = nullptr;      //Класс выполняющий стыковку обьектов
+GraphicsBuilder* builder = nullptr; // Данные отрисовки
+std::vector<DrawOrderer::OrderStruct> orderedPath ;
+
+bool isInitialized = false;
+
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner)
 	: TForm(Owner)
 {
 }
 //---------------------------------------------------------------------------
-
-///////////////////////////////////  END DXF FILE  ///////////////////////////
 
 void __fastcall TForm1::BitBtn3Click(TObject *Sender)
 {
@@ -43,32 +48,81 @@ void __fastcall TForm1::BitBtn3Click(TObject *Sender)
 	OpenDialog1->FileName = "";
 	OpenDialog1->Execute();
 
-
-
-	Memo1->Clear(); // Очищаем memo перед выводом новых данных
 	AnsiString ansiPath = OpenDialog1->FileName;
 	parser.parse(ansiPath.c_str(), &ToolDrawConvertDXF);
 
-    // Упорядочиваем элементы
-	DrawOrderer orderer(ToolDrawConvertDXF);
-	auto orderedPath = orderer.createOrderedPath();
+	// Упорядочиваем элементы
+	orderer = new DrawOrderer(ToolDrawConvertDXF);
+	orderedPath = orderer->createOrderedPath();
 
-		int entityCount = static_cast<int>(orderedPath.size());
+	// Удаляем старый builder, если был
+	delete builder;
+    builder = new GraphicsBuilder(orderedPath);
+	isInitialized = false; // Сбрасываем флаг инициализации
 
-		Memo1->Lines->Add("Parsed " + IntToStr(entityCount) + " entities:");
-		Memo1->Lines->Add("--------------------------------------");
-		for (int i = 0; i < orderedPath.size(); i++) {
-			 AnsiString str = " Line = " + String(orderedPath[i].type);
-			 str += "\r\n";
-			 str += "X=" + String().FormatFloat("0.###",orderedPath[i].x1);
-			 str += "  Y=" + String().FormatFloat("0.###",orderedPath[i].y1);
-			 str += "  X2=" + String().FormatFloat("0.###",orderedPath[i].x2);
-			 str += "  Y2=" + String().FormatFloat("0.###",orderedPath[i].y2);
-			 str += "  I=" + String().FormatFloat("0.###",orderedPath[i].i);
-			 str += "  J=" + String().FormatFloat("0.###",orderedPath[i].j);
-             str += "\r\n";
-			  Memo1->Lines->Add(str);
-		}
-
+  	ToolPathDraw->Invalidate();
 }
 //---------------------------------------------------------------------------
+void __fastcall TForm1::ToolPathDrawPaint(TObject *Sender)
+{
+
+	TRect drawArea = ToolPathDraw->ClientRect;
+	TCanvas* canvas = ToolPathDraw->Canvas;
+
+  if (builder != nullptr) {
+		// Первичная настройка (вызывается один раз)
+		if (!isInitialized) {
+			builder->fitToView(drawArea);
+			isInitialized = true;
+		}
+
+		builder->paint(canvas, drawArea);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::FormDestroy(TObject *Sender)
+{
+        delete builder;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::ToolPathDrawMouseDown(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+	if (builder != nullptr) {
+			builder->mouseDown(X, Y);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::ToolPathDrawMouseMove(TObject *Sender, TShiftState Shift,
+          int X, int Y)
+{
+	if (builder != nullptr) {
+			builder->mouseMove(X, Y);
+			ToolPathDraw->Invalidate(); // Перерисовка
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::ToolPathDrawMouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+	if (builder != nullptr) {
+		builder->mouseUp();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
+          TPoint &MousePos, bool &Handled)
+{
+	if (builder != nullptr) {
+		builder->mouseWheel(WheelDelta, MousePos.x, MousePos.y);
+		ToolPathDraw->Invalidate();
+		Handled = true;
+    }
+}
+//---------------------------------------------------------------------------
+

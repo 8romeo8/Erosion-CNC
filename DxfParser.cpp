@@ -8,7 +8,7 @@
 #include <cmath>
 
 
-	void DxfParser::parse(const std::string& filePath, std::vector<P>* ToolDraw) {
+	void DxfParser::parse(const std::string& filePath, std::vector<DxfPos>* ToolDraw) {
         std::ifstream file(filePath);
         if (!file.is_open()) {
             std::cerr << "Error opening file: " << filePath << std::endl;
@@ -83,7 +83,7 @@
         }
     }
 
-	void DxfParser::handleLine(std::ifstream& file, std::vector<P>* ToolDraw) {
+	void DxfParser::handleLine(std::ifstream& file, std::vector<DxfPos>* ToolDraw) {
         double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
         std::string code, value;
 
@@ -101,10 +101,10 @@
             else if (code == "21") y2 = safeStod(value);
         }
 
-        ToolDraw->push_back({x1, y1, x2, y2, 0, 0, '1'});
+		ToolDraw->push_back({x1, y1, x2, y2, 0, 0, 1});
     }
 
-	void DxfParser::handleArc(std::ifstream& file, std::vector<P>* ToolDraw) {
+	void DxfParser::handleArc(std::ifstream& file, std::vector<DxfPos>* ToolDraw) {
         double cx = 0, cy = 0, cz = 0, r = 0, startAngle = 0, endAngle = 0;
         std::string code, value;
 
@@ -137,11 +137,11 @@
         double i = cx - x1;
         double j = cy - y1;
 
-        ToolDraw->push_back({x1, y1, x2, y2, i, j, '2'});
+		ToolDraw->push_back({x1, y1, x2, y2, i, j, 2});
     }
 
-	void DxfParser::handleCircle(std::ifstream& file, std::vector<P>* ToolDraw) {
-        double cx = 0, cy = 0, r = 0;
+	void DxfParser::handleCircle(std::ifstream& file, std::vector<DxfPos>* ToolDraw) {
+		double cx = 0, cy = 0, r = 0;
         std::string code, value;
 
         while (true) {
@@ -157,10 +157,10 @@
             else if (code == "40") r = safeStod(value);
         }
 
-        ToolDraw->push_back({cx + r, cy, cx + r, cy, -r, 0, '3'});
+		ToolDraw->push_back({cx + r, cy, cx + r, cy, -r, 0, 3});
     }
 
-	void DxfParser::handleLwPolyline(std::ifstream& file, std::vector<P>* ToolDraw) {
+	void DxfParser::handleLwPolyline(std::ifstream& file, std::vector<DxfPos>* ToolDraw) {
         int flags = 0, vertexCount = 0;
         std::vector<double> vertices;
         std::vector<double> bulges;
@@ -200,7 +200,7 @@
             double bulge = (i < bulges.size()) ? bulges[i] : 0.0;
 
             if (std::abs(bulge) < 1e-9) {
-                ToolDraw->push_back({x1, y1, x2, y2, 0, 0, '1'});
+				ToolDraw->push_back({x1, y1, x2, y2, 0, 0,1});
             }
             else {
                 double chordLength = std::hypot(x2 - x1, y2 - y1);
@@ -217,7 +217,7 @@
                 double i_val = cx - x1;
                 double j_val = cy - y1;
 
-                ToolDraw->push_back({x1, y1, x2, y2, i_val, j_val, '2'});
+                ToolDraw->push_back({x1, y1, x2, y2, i_val, j_val, 2});
             }
         }
     }

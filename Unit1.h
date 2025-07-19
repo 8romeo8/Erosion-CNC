@@ -55,9 +55,19 @@ __published:	// IDE-managed Components
 	TPanel *Panel10;
 	TBitBtn *BitBtn12;
 	TBitBtn *BitBtn13;
-	TMemo *Memo1;
 	TOpenDialog *OpenDialog1;
+	TPaintBox *ToolPathDraw;
 	void __fastcall BitBtn3Click(TObject *Sender);
+	void __fastcall ToolPathDrawPaint(TObject *Sender);
+	void __fastcall FormDestroy(TObject *Sender);
+	void __fastcall ToolPathDrawMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall ToolPathDrawMouseMove(TObject *Sender, TShiftState Shift, int X,
+          int Y);
+	void __fastcall ToolPathDrawMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
+          TPoint &MousePos, bool &Handled);
 private:	// User declarations
 	struct St
 	{
@@ -68,7 +78,8 @@ private:	// User declarations
 
 		unsigned    __int64 thisPoin; //Текущая выполняемая точка
 	};
-    St Stanok;
+	St Stanok;
+
 public:		// User declarations
 	__fastcall TForm1(TComponent* Owner);
 };

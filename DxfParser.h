@@ -29,7 +29,7 @@ struct DxfPos {
     double x1, y1;  // Ќачальна€ точка
     double x2, y2;  //  онечна€ точка
     double i, j;    // ÷ентр дуги (относительно начальной точки)
-    char lineOrCircle; // '1'-лини€, '2'-дуга, '3'-окружность
+    int lineOrCircle; // '1'-лини€, '2'-дуга, '3'-окружность
 };
 
 class DxfParser {

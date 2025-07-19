@@ -15,21 +15,23 @@ std::vector<DrawOrderer::OrderStruct> DrawOrderer::createOrderedPath() {
     // Шаг 1: Добавляем первый элемент
 	ordered.push_back(convertToOrderStruct(m_source[0]));
     used[0] = true;
-    double currentX = m_source[0].x2;
-    double currentY = m_source[0].y2;
+	double currentX = m_source[0].x2;
+	double currentY = m_source[0].y2;
 
     // Шаг 2: Ищем последующие элементы
     bool found;
     do {
         found = false;
         for (size_t i = 0; i < m_source.size(); ++i) {
-            if (used[i]) continue;
-
+			if (used[i]) continue;
             // Проверяем совпадение точек с допуском
-            if (isEqual(m_source[i].x1, currentX) &&
-                isEqual(m_source[i].y1, currentY)) {
+			if (isEqual(m_source[i].x1, currentX) &&
+				isEqual(m_source[i].y1, currentY) ||
+				isEqual(m_source[i].x2, currentX) &&
+				isEqual(m_source[i].y2, currentY))
+			{
 
-                ordered.push_back(convertToDrawStruct(m_source[i]));
+				ordered.push_back(convertToOrderStruct(m_source[i]));
                 used[i] = true;
                 currentX = m_source[i].x2;
                 currentY = m_source[i].y2;
@@ -53,7 +55,7 @@ bool DrawOrderer::isEqual(double a, double b) const {
     return std::fabs(a - b) < 1e-9;  // Сравнение с допуском
 }
 
-DrawOrderer::DrawOrderer DrawOrderer::convertToOrderStruct(const DxfPos& seg) const {
+DrawOrderer::OrderStruct DrawOrderer::convertToOrderStruct(const DxfPos& seg) const {
     return {
         seg.x1, seg.y1,  // Начальная точка
         seg.x2, seg.y2,  // Конечная точка

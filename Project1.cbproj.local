@@ -1,12 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>1899.12.30 00:00:00.000.810,C:\Users\Starck\Documents\Embarcadero\Studio\Projects\Project1.cbproj=F:\ArtyMax Эрозионная резка\Project1.cbproj</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.097,=C:\Users\Starck\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.513,=F:\ArtyMax Эрозионная резка\File1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.636,=F:\ArtyMax Эрозионная резка\File1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.224,F:\ArtyMax Эрозионная резка\File1.cpp=F:\ArtyMax Эрозионная резка\DrawOrderer.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.873,=F:\ArtyMax Эрозионная резка\File1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.693,F:\ArtyMax Эрозионная резка\File1.cpp=F:\ArtyMax Эрозионная резка\GraphicsBuilder.cpp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.692,C:\Users\Starck\Documents\Embarcadero\Studio\Projects\Project1PCH1.h=F:\ArtyMax Эрозионная резка\Project1PCH1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.097,=C:\Users\Starck\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.810,C:\Users\Starck\Documents\Embarcadero\Studio\Projects\Project1.cbproj=F:\ArtyMax Эрозионная резка\Project1.cbproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.814,C:\Users\Starck\Documents\Embarcadero\Studio\Projects\Unit1.dfm=F:\ArtyMax Эрозионная резка\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.705,F:\ArtyMax Эрозионная резка\File1.cpp=F:\ArtyMax Эрозионная резка\DxfParser.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.098,F:\ArtyMax Эрозионная резка\File1.h=F:\ArtyMax Эрозионная резка\GraphicsBuilder.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.346,F:\ArtyMax Эрозионная резка\File1.h=F:\ArtyMax Эрозионная резка\DrawOrderer.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.955,F:\ArtyMax Эрозионная резка\File1.h=F:\ArtyMax Эрозионная резка\DxfParser.h</Transaction>
     <Transaction>1899.12.30 00:00:00.000.814,C:\Users\Starck\Documents\Embarcadero\Studio\Projects\Unit1.h=F:\ArtyMax Эрозионная резка\Unit1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.970,=F:\ArtyMax Эрозионная резка\File1.h</Transaction>
     <Transaction>1899.12.30 00:00:00.000.633,=C:\Users\Starck\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.814,C:\Users\Starck\Documents\Embarcadero\Studio\Projects\Unit1.cpp=F:\ArtyMax Эрозионная резка\Unit1.cpp</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.814,C:\Users\Starck\Documents\Embarcadero\Studio\Projects\Unit1.dfm=F:\ArtyMax Эрозионная резка\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.998,=F:\ArtyMax Эрозионная резка\File1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.593,=F:\ArtyMax Эрозионная резка\File1.h</Transaction>
   </Transactions>
 </BorlandProject>
