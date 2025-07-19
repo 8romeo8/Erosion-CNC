@@ -8,6 +8,7 @@
 #include <vector>
 #include <Vcl.Graphics.hpp>
 #include "DrawOrderer.h"
+#include <set>
 
 // Предварительное объявление класса DrawOrderer, чтобы избежать циклических зависимостей
 class DrawOrderer;
@@ -43,6 +44,17 @@ public:
     void mouseUp();
     void mouseWheel(int delta, int x, int y);
 	void fitToView(const TRect& drawArea);
+    //методы для работы с выделением
+    void selectElement(int index);
+    void deselectElement(int index);
+    void clearSelection();
+    const std::set<int>& getSelectedIndices() const;
+
+    // Поиск элементов под курсором
+    std::vector<int> findElementsAt(int screenX, int screenY, double tolerance = 5.0);
+
+    // Проверка попадания точки на конкретный элемент
+	bool isPointOnElement(int index, int screenX, int screenY, double tolerance = 5.0) const;
 
 private:
     const std::vector<DrawOrderer::OrderStruct>& m_source;
@@ -59,7 +71,12 @@ private:
 	double worldToScreenY(double worldY, int canvasHeight) const;
     double GraphicsBuilder::worldToScale(double worldX) const;
 	void drawArc(TCanvas* canvas, DrawToolLine& arc) const;
-    void drawCircle(TCanvas* canvas, DrawToolLine& circle) const;
+	void drawCircle(TCanvas* canvas, DrawToolLine& circle) const;
+    std::set<int> m_selectedIndices; // Индексы выделенных элементов
+
+    // Преобразование экранных координат в мировые
+    double screenToWorldX(int screenX) const;
+	double screenToWorldY(int screenY) const;
 };
 
 #endif // GRAPHICSBUILDER_H

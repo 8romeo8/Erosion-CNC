@@ -29,35 +29,6 @@ void GraphicsBuilder::updateTransformedData() {
 
 }
 
-void GraphicsBuilder::paint(TCanvas* canvas, const TRect& drawArea) {
-    if (!canvas) return;
-
-     if(m_transformed.empty()) return;
-
-     // Обновляем данные с учетом высоты канвы
-    updateTransformedData();
-
-    // Заливка фона
-    canvas->Brush->Color = m_settings.backgroundColor;
-    canvas->FillRect(drawArea);
-
-	for (int i=0; i < m_transformed.size(); i++) {
-			if(m_transformed[i].Type == 1) {
-				canvas->Pen->Color = m_settings.lineColor;
-				canvas->MoveTo(m_transformed[i].x1, m_transformed[i].y1);
-				canvas->LineTo(m_transformed[i].x2, m_transformed[i].y2);
-			}else
-			if(m_transformed[i].Type == 2) {
-				drawArc(canvas, m_transformed[i]);
-			}else
-			if(m_transformed[i].Type == 3)
-			{
-				drawCircle(canvas, m_transformed[i]);
-			}
-		}
-
-}
-
 void GraphicsBuilder::mouseDown(int x, int y) {
     m_dragging = true;
     m_lastX = x;
@@ -235,3 +206,178 @@ void GraphicsBuilder::drawCircle(TCanvas* canvas, DrawToolLine& circle) const {
 		static_cast<int>(circle.y1 + circle.j + radius)
 	);
 }
+
+// Методы нахождения линии под мышкой
+
+void GraphicsBuilder::selectElement(int index) {
+    m_selectedIndices.insert(index);
+}
+
+void GraphicsBuilder::deselectElement(int index) {
+    m_selectedIndices.erase(index);
+}
+
+void GraphicsBuilder::clearSelection() {
+    m_selectedIndices.clear();
+}
+
+const std::set<int>& GraphicsBuilder::getSelectedIndices() const {
+    return m_selectedIndices;
+}
+
+// Преобразование экранных координат в мировые
+double GraphicsBuilder::screenToWorldX(int screenX) const {
+    return (screenX - m_settings.xOffset) / m_settings.scale;
+}
+
+double GraphicsBuilder::screenToWorldY(int screenY) const {
+    int canvasHeight = m_settings.drawArea.Height();
+    return (canvasHeight - screenY - m_settings.yOffset) / m_settings.scale;
+}
+
+// Проверка попадания точки на элемент
+bool GraphicsBuilder::isPointOnElement(int index, int screenX, int screenY, double tolerance) const {
+    if (index < 0 || index >= static_cast<int>(m_source.size()))
+        return false;
+
+    const auto& elem = m_source[index];
+    double worldX = screenToWorldX(screenX);
+    double worldY = screenToWorldY(screenY);
+	double tolWorld = tolerance / m_settings.scale;
+
+	switch (elem.Type) {
+        case 1: { // Линия
+            // Вычисляем расстояние от точки до отрезка
+            double A = worldX - elem.x1;
+            double B = worldY - elem.y1;
+            double C = elem.x2 - elem.x1;
+            double D = elem.y2 - elem.y1;
+
+            double dot = A * C + B * D;
+            double len_sq = C * C + D * D;
+            double param = (len_sq != 0) ? dot / len_sq : -1;
+
+            double xx, yy;
+
+            if (param < 0) {
+                xx = elem.x1;
+                yy = elem.y1;
+            } else if (param > 1) {
+                xx = elem.x2;
+                yy = elem.y2;
+            } else {
+                xx = elem.x1 + param * C;
+                yy = elem.y1 + param * D;
+            }
+
+            double dx = worldX - xx;
+            double dy = worldY - yy;
+            return (dx * dx + dy * dy) <= (tolWorld * tolWorld);
+        }
+		case 3: { // Окружность
+            double cx = elem.x1 + elem.i;
+            double cy = elem.y1 + elem.j;
+            double radius = std::sqrt(elem.i * elem.i + elem.j * elem.j);
+            double dist = std::sqrt(
+                (worldX - cx) * (worldX - cx) +
+                (worldY - cy) * (worldY - cy)
+            );
+            return std::abs(dist - radius) <= tolWorld;
+        }
+		case 2: { // Дуга
+            // Вычисляем центр и радиус
+            double cx = elem.x1 + elem.i;
+            double cy = elem.y1 + elem.j;
+            double radius = std::sqrt(elem.i * elem.i + elem.j * elem.j);
+            double dx = worldX - cx;
+            double dy = worldY - cy;
+            double dist = std::sqrt(dx*dx + dy*dy);
+
+            // Проверка расстояния до центра
+            if (std::abs(dist - radius) > tolWorld) {
+                return false;
+            }
+
+            // Вычисляем углы в радианах
+            auto calcAngle = [](double dx, double dy) {
+                double angle = std::atan2(dy, dx);
+                return angle < 0 ? angle + 2*M_PI : angle;
+            };
+
+            // Углы начальной, конечной и проверяемой точек
+            double start_angle = calcAngle(elem.x1 - cx, elem.y1 - cy);
+            double end_angle = calcAngle(elem.x2 - cx, elem.y2 - cy);
+            double point_angle = calcAngle(dx, dy);
+
+            // Проверка попадания в угловой сектор (против часовой стрелки)
+            if (start_angle <= end_angle) {
+                return (point_angle >= start_angle && point_angle <= end_angle);
+            } else {
+                return point_angle >= start_angle || point_angle <= end_angle;
+            }
+        }
+        default:
+            return false;
+    }
+}
+
+// Поиск элементов под курсором
+std::vector<int> GraphicsBuilder::findElementsAt(int screenX, int screenY, double tolerance) {
+    std::vector<int> result;
+    for (int i = 0; i < static_cast<int>(m_source.size()); ++i) {
+        if (isPointOnElement(i, screenX, screenY, tolerance)) {
+            result.push_back(i);
+        }
+    }
+    return result;
+}
+
+// Отрисовка с выделением выбранных элементов
+void GraphicsBuilder::paint(TCanvas* canvas, const TRect& drawArea) {
+    if (!canvas) return;
+
+    // Обновляем область рисования
+    m_settings.drawArea = drawArea;
+
+    if (m_source.empty()) return;
+
+    // Заливка фона
+    canvas->Brush->Color = m_settings.backgroundColor;
+    canvas->FillRect(drawArea);
+
+    // Обновляем трансформированные данные
+    updateTransformedData();
+
+    // Цвета по умолчанию
+    TColor defaultLineColor = m_settings.lineColor;
+    TColor defaultArcColor = m_settings.arcColor;
+    TColor defaultCircleColor = m_settings.circleColor;
+
+    for (int i = 0; i < static_cast<int>(m_transformed.size()); i++) {
+        // Если элемент выбран, меняем цвет
+        if (m_selectedIndices.find(i) != m_selectedIndices.end()) {
+            canvas->Pen->Color = clRed;  // Цвет выделения
+            canvas->Pen->Width = 2;      // Толщина линии для выделения
+        } else {
+            // Возвращаем стандартные настройки
+            canvas->Pen->Width = 1;
+            switch (m_transformed[i].Type) {
+                case 1: canvas->Pen->Color = defaultLineColor; break;
+                case 2: canvas->Pen->Color = defaultArcColor; break;
+                case 3: canvas->Pen->Color = defaultCircleColor; break;
+            }
+        }
+
+        // Отрисовка элемента
+        if (m_transformed[i].Type == 1) {
+            canvas->MoveTo(m_transformed[i].x1, m_transformed[i].y1);
+            canvas->LineTo(m_transformed[i].x2, m_transformed[i].y2);
+        } else if (m_transformed[i].Type == 2) {
+            drawArc(canvas, m_transformed[i]);
+        } else if (m_transformed[i].Type == 3) {
+            drawCircle(canvas, m_transformed[i]);
+        }
+    }
+}
+
+

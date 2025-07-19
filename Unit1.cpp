@@ -91,7 +91,18 @@ void __fastcall TForm1::ToolPathDrawMouseDown(TObject *Sender, TMouseButton Butt
           TShiftState Shift, int X, int Y)
 {
 	if (builder != nullptr) {
-			builder->mouseDown(X, Y);
+             builder->mouseDown(X, Y);
+			 if (Button == mbLeft) {
+				// Поиск элементов под курсором
+				auto elements = builder->findElementsAt(X, Y);
+
+				if (!elements.empty()) {
+					// Выделяем первый найденный элемент
+					builder->clearSelection();
+					builder->selectElement(elements[0]);
+					ToolPathDraw->Invalidate(); // Перерисовываем
+				}
+			}
 	}
 }
 //---------------------------------------------------------------------------
