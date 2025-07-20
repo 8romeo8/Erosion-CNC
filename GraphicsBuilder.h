@@ -9,6 +9,7 @@
 #include <Vcl.Graphics.hpp>
 #include "DrawOrderer.h"
 #include <set>
+#include "State.h"   //Управление состояниями
 
 // Предварительное объявление класса DrawOrderer, чтобы избежать циклических зависимостей
 class DrawOrderer;
@@ -33,7 +34,7 @@ struct DrawSettings {
 class GraphicsBuilder {
 public:
     GraphicsBuilder(const std::vector<DrawOrderer::OrderStruct>& source);
-
+    State machineState; //Класс сотояний станка
     // Установка новых настроек
     void setSettings(const DrawSettings& settings);
     DrawSettings getSettings() const;
@@ -47,11 +48,11 @@ public:
     //методы для работы с выделением
     void selectElement(int index);
     void deselectElement(int index);
-    void clearSelection();
+	void clearSelection();
     const std::set<int>& getSelectedIndices() const;
 
     // Поиск элементов под курсором
-    std::vector<int> findElementsAt(int screenX, int screenY, double tolerance = 5.0);
+    void findElementsAt(int screenX, int screenY, double tolerance = 5.0);
 
     // Проверка попадания точки на конкретный элемент
 	bool isPointOnElement(int index, int screenX, int screenY, double tolerance = 5.0) const;
@@ -69,7 +70,7 @@ private:
     DrawToolLine transformElement(const DrawOrderer::OrderStruct& elem, int canvasHeight) const;
     double worldToScreenX(double worldX) const;
 	double worldToScreenY(double worldY, int canvasHeight) const;
-    double GraphicsBuilder::worldToScale(double worldX) const;
+    double worldToScale(double worldX) const;
 	void drawArc(TCanvas* canvas, DrawToolLine& arc) const;
 	void drawCircle(TCanvas* canvas, DrawToolLine& circle) const;
     std::set<int> m_selectedIndices; // Индексы выделенных элементов

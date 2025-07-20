@@ -29,17 +29,6 @@ __published:	// IDE-managed Components
 	TLabel *TimeProg;
 	TPanel *Panel5;
 	TLabel *Label3;
-	TBitBtn *BitBtn1;
-	TBitBtn *BitBtn2;
-	TBitBtn *BitBtn3;
-	TBitBtn *BitBtn4;
-	TBitBtn *BitBtn5;
-	TBitBtn *BitBtn6;
-	TBitBtn *BitBtn7;
-	TBitBtn *BitBtn8;
-	TBitBtn *BitBtn9;
-	TBitBtn *BitBtn10;
-	TBitBtn *BitBtn11;
 	TPanel *Panel6;
 	TLabel *Label4;
 	TLabel *Label5;
@@ -53,11 +42,21 @@ __published:	// IDE-managed Components
 	TLabel *Label7;
 	TLabel *Label8;
 	TPanel *Panel10;
-	TBitBtn *BitBtn12;
-	TBitBtn *BitBtn13;
 	TOpenDialog *OpenDialog1;
 	TPaintBox *ToolPathDraw;
-	void __fastcall BitBtn3Click(TObject *Sender);
+	TTimer *UpdateDraw;
+	TSpeedButton *BtnLoadFile;
+	TSpeedButton *BtnZero;
+	TSpeedButton *BtnGoKadr;
+	TSpeedButton *BtnSdvig;
+	TSpeedButton *BtnStopAngle;
+	TSpeedButton *BtnBeckWard;
+	TSpeedButton *BtnForWadr;
+	TSpeedButton *BtnOnOffSoj;
+	TSpeedButton *BtnOnOffGeneric;
+	TSpeedButton *BtnStop;
+	TSpeedButton *BtnStart;
+	TSpeedButton *BtnBarabanOnOff;
 	void __fastcall ToolPathDrawPaint(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
 	void __fastcall ToolPathDrawMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
@@ -68,6 +67,9 @@ __published:	// IDE-managed Components
           int X, int Y);
 	void __fastcall FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
           TPoint &MousePos, bool &Handled);
+	void __fastcall FormCreate(TObject *Sender);
+	void __fastcall UpdateDrawTimer(TObject *Sender);
+	void __fastcall BtnLoadFileClick(TObject *Sender);
 private:	// User declarations
 	struct St
 	{

@@ -1,0 +1,85 @@
+#ifndef STATE_H
+#define STATE_H
+
+#include <vector>
+#include <map>
+
+/* 20.07.2025    8romeo8@list.ru       (+79780592624)
+   Класс для хранения состояния машины и переходов между состояниями.
+   Описание состояний:
+
+   DefaultState - Состояние после загрузки и парсинга dxf файла.
+   PointSelectionState - Состояние выбора первичной точки старта программы.
+   PathSelectionState - Состояние выбора траектории движения машины.
+   EquidistantSelectionState - Состояние выбора направления смещения траектории.
+   PathGenerationState - Состояние формирования итоговой траектории движения.
+   ReadyToStartState - Траектория сформирована, программа ещё не запущена.
+   ZeroCalibrationState - Процедура поиска нулевой точки.
+   RunningWithCoolantState - Выполнение программы с включенной СОЖ.
+   DryRunningState - Выполнение программы без системы охлаждения.
+   PausedState - Временная остановка выполнения программы.
+   EndProgramState - Программа завершена.
+   RewindState - Движение в обратном направлении.
+   RapidMoveState - Позиционирование над выбранной точкой.
+
+   Как использовать
+
+   State machineState;
+	if (machineState.setState(PointSelectionState)) {
+			// Переход успешен
+	} else {
+			// Недопустимый переход
+	}
+*/
+
+enum Status {
+    DefaultState,
+    PointSelectionState,
+    PathSelectionState,
+    EquidistantSelectionState,
+    PathGenerationState,
+    ReadyToStartState,
+    ZeroCalibrationState,
+    RunningWithCoolantState,
+    DryRunningState,
+    PausedState,
+    EndProgramState,
+    RewindState,
+    RapidMoveState
+};
+
+class State {
+private:
+    Status currentState;
+    std::map<Status, std::vector<Status>> validTransitions;
+
+    void initializeTransitions() {
+        // Инициализация допустимых переходов между состояниями
+        validTransitions[DefaultState] = {PointSelectionState};
+        validTransitions[PointSelectionState] = {PathSelectionState, DefaultState};
+        validTransitions[PathSelectionState] = {EquidistantSelectionState, PointSelectionState};
+        validTransitions[EquidistantSelectionState] = {PathGenerationState, PathSelectionState};
+        validTransitions[PathGenerationState] = {ReadyToStartState, EquidistantSelectionState};
+        validTransitions[ReadyToStartState] = {ZeroCalibrationState, RapidMoveState, PathGenerationState};
+        validTransitions[ZeroCalibrationState] = {ReadyToStartState, RunningWithCoolantState, DryRunningState};
+        validTransitions[RunningWithCoolantState] = {PausedState, EndProgramState, DryRunningState};
+        validTransitions[DryRunningState] = {PausedState, EndProgramState, RunningWithCoolantState};
+        validTransitions[PausedState] = {RunningWithCoolantState, DryRunningState, ReadyToStartState, EndProgramState};
+        validTransitions[EndProgramState] = {ReadyToStartState, DefaultState};
+        validTransitions[RewindState] = {PausedState, RunningWithCoolantState, DryRunningState};
+        validTransitions[RapidMoveState] = {ReadyToStartState, ZeroCalibrationState};
+    }
+
+public:
+	State() : currentState(DefaultState){
+        initializeTransitions();
+	};
+	void onPaint(TCanvas Canvas);
+	Status getState() const ;
+	bool setState(Status newState);
+	bool isValidTransition(Status newState) const;
+	void isMouseDown(int x, int y);
+	void isMouseMove(int x, int y);
+};
+
+#endif

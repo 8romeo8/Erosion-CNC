@@ -13,6 +13,7 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   WindowState = wsMaximized
+  OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnMouseWheel = FormMouseWheel
   DesignSize = (
@@ -393,6 +394,175 @@ object Form1: TForm1
     Font.Style = []
     ParentFont = False
   end
+  object BtnLoadFile: TSpeedButton
+    Left = 1104
+    Top = 263
+    Width = 168
+    Height = 61
+    Anchors = [akTop, akRight]
+    Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    OnClick = BtnLoadFileClick
+  end
+  object BtnZero: TSpeedButton
+    Left = 992
+    Top = 344
+    Width = 130
+    Height = 47
+    Anchors = [akTop, akRight]
+    Caption = #1054#1073#1085#1091#1083#1080#1090#1100
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object BtnGoKadr: TSpeedButton
+    Left = 1142
+    Top = 344
+    Width = 130
+    Height = 47
+    Anchors = [akTop, akRight]
+    Caption = #8470' '#1050#1072#1076#1088#1072
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object BtnSdvig: TSpeedButton
+    Left = 992
+    Top = 397
+    Width = 130
+    Height = 47
+    Anchors = [akTop, akRight]
+    Caption = #1055#1077#1088#1077#1084#1077#1089#1090#1080#1090#1100
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object BtnStopAngle: TSpeedButton
+    Left = 1142
+    Top = 397
+    Width = 130
+    Height = 47
+    Anchors = [akTop, akRight]
+    Caption = #1057#1090#1086#1087' '#1085#1072' '#1091#1075#1083#1072#1093
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object BtnBeckWard: TSpeedButton
+    Left = 992
+    Top = 474
+    Width = 130
+    Height = 47
+    Anchors = [akTop, akRight]
+    Caption = #1053#1072#1079#1072#1076' '#1087#1086' '#1090#1088'.'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object BtnForWadr: TSpeedButton
+    Left = 1142
+    Top = 474
+    Width = 130
+    Height = 47
+    Anchors = [akTop, akRight]
+    Caption = #1042#1087#1077#1088#1076' '#1087#1086' '#1090#1088'.'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object BtnOnOffSoj: TSpeedButton
+    Left = 992
+    Top = 527
+    Width = 130
+    Height = 47
+    Anchors = [akTop, akRight]
+    Caption = #1057#1086#1078' '#1074#1082'/'#1074#1099#1082#1083
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object BtnOnOffGeneric: TSpeedButton
+    Left = 1142
+    Top = 527
+    Width = 130
+    Height = 47
+    Anchors = [akTop, akRight]
+    Caption = #1043#1077#1085#1077#1088#1072#1090#1086#1088' '#1074#1082
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object BtnStop: TSpeedButton
+    Left = 992
+    Top = 696
+    Width = 130
+    Height = 58
+    Anchors = [akRight, akBottom]
+    Caption = #1057#1090#1086#1087
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clMaroon
+    Font.Height = -27
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object BtnStart: TSpeedButton
+    Left = 1142
+    Top = 696
+    Width = 130
+    Height = 58
+    Anchors = [akRight, akBottom]
+    Caption = #1057#1090#1072#1088#1090
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clGreen
+    Font.Height = -27
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object BtnBarabanOnOff: TSpeedButton
+    Left = 992
+    Top = 580
+    Width = 130
+    Height = 47
+    Anchors = [akTop, akRight]
+    Caption = #1041#1072#1088#1072#1073#1072#1085' '#1074#1082'.'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
   object ToolPath: TPanel
     Left = 8
     Top = 8
@@ -768,215 +938,6 @@ object Form1: TForm1
       TabOrder = 1
     end
   end
-  object BitBtn1: TBitBtn
-    Left = 1135
-    Top = 696
-    Width = 130
-    Height = 61
-    Anchors = [akRight, akBottom]
-    Caption = #1057#1090#1072#1088#1090
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clGreen
-    Font.Height = -27
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 7
-    TabStop = False
-  end
-  object BitBtn2: TBitBtn
-    Left = 992
-    Top = 696
-    Width = 130
-    Height = 61
-    Anchors = [akRight, akBottom]
-    Caption = #1057#1090#1086#1087
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clMaroon
-    Font.Height = -27
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 8
-    TabStop = False
-  end
-  object BitBtn3: TBitBtn
-    Left = 1103
-    Top = 263
-    Width = 169
-    Height = 61
-    Anchors = [akTop, akRight]
-    Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -27
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 9
-    TabStop = False
-    OnClick = BitBtn3Click
-  end
-  object BitBtn4: TBitBtn
-    Left = 992
-    Top = 344
-    Width = 130
-    Height = 47
-    Anchors = [akTop, akRight]
-    Caption = #1054#1073#1085#1091#1083#1080#1090#1100
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 10
-    TabStop = False
-  end
-  object BitBtn5: TBitBtn
-    Left = 1142
-    Top = 344
-    Width = 130
-    Height = 47
-    Anchors = [akTop, akRight]
-    Caption = #8470' '#1050#1072#1076#1088#1072
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 11
-    TabStop = False
-  end
-  object BitBtn6: TBitBtn
-    Left = 992
-    Top = 474
-    Width = 130
-    Height = 47
-    Anchors = [akTop, akRight]
-    Caption = #1053#1072#1079#1072#1076' '#1087#1086' '#1090#1088'.'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 12
-    TabStop = False
-  end
-  object BitBtn7: TBitBtn
-    Left = 1142
-    Top = 474
-    Width = 130
-    Height = 47
-    Anchors = [akTop, akRight]
-    Caption = #1042#1087#1077#1088#1077#1076' '#1087#1086' '#1090#1088'.'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 13
-    TabStop = False
-  end
-  object BitBtn8: TBitBtn
-    Left = 992
-    Top = 397
-    Width = 130
-    Height = 47
-    Anchors = [akTop, akRight]
-    Caption = #1055#1077#1088#1077#1084#1077#1089#1090#1080#1090#1100
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 14
-    TabStop = False
-  end
-  object BitBtn9: TBitBtn
-    Left = 1142
-    Top = 397
-    Width = 130
-    Height = 47
-    Anchors = [akTop, akRight]
-    Caption = #1057#1090#1086#1087' '#1085#1072' '#1091#1075#1083#1072#1093
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 15
-    TabStop = False
-  end
-  object BitBtn10: TBitBtn
-    Left = 992
-    Top = 527
-    Width = 130
-    Height = 47
-    Anchors = [akTop, akRight]
-    Caption = #1057#1086#1078' '#1074#1082'/'#1074#1099#1082#1083
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 16
-    TabStop = False
-  end
-  object BitBtn11: TBitBtn
-    Left = 1142
-    Top = 527
-    Width = 130
-    Height = 47
-    Anchors = [akTop, akRight]
-    Caption = #1043#1077#1085#1077#1088#1072#1090#1086#1088' '#1074#1082'.'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 17
-    TabStop = False
-  end
-  object BitBtn12: TBitBtn
-    Left = 992
-    Top = 599
-    Width = 130
-    Height = 47
-    Anchors = [akTop, akRight]
-    Caption = #1047#1072#1076#1072#1090#1100' '#1089#1082#1086#1088'.'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 18
-    TabStop = False
-  end
-  object BitBtn13: TBitBtn
-    Left = 1142
-    Top = 599
-    Width = 130
-    Height = 47
-    Anchors = [akTop, akRight]
-    Caption = #1054#1087#1088#1077#1076'. '#1087#1086#1079'.'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 19
-    TabStop = False
-  end
   object OpenDialog1: TOpenDialog
     DefaultExt = '.CNC'
     Filter = '*.DXF|*.DXF|*.Tap|*.tap'
@@ -984,5 +945,11 @@ object Form1: TForm1
     Title = 'Open GCode.CNC'
     Left = 983
     Top = 263
+  end
+  object UpdateDraw: TTimer
+    Interval = 100
+    OnTimer = UpdateDrawTimer
+    Left = 1240
+    Top = 648
   end
 end

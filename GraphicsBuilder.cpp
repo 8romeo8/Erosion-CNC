@@ -4,6 +4,7 @@
 #include <cmath>
 #include <limits>
 
+
 GraphicsBuilder::GraphicsBuilder(const std::vector<DrawOrderer::OrderStruct>& source)
 	: m_source(source) {
 	updateTransformedData();
@@ -32,7 +33,11 @@ void GraphicsBuilder::updateTransformedData() {
 void GraphicsBuilder::mouseDown(int x, int y) {
     m_dragging = true;
     m_lastX = x;
-    m_lastY = y;
+	m_lastY = y;
+
+	clearSelection();
+	findElementsAt(x, y);
+    machineState.isMouseDown(x,y);
 }
 
 void GraphicsBuilder::mouseMove(int x, int y) {
@@ -43,6 +48,8 @@ void GraphicsBuilder::mouseMove(int x, int y) {
         m_lastX = x;
         m_lastY = y;
 		updateTransformedData();
+
+        machineState.isMouseMove(x,y);
 	}
 }
 
@@ -149,8 +156,6 @@ DrawToolLine GraphicsBuilder::transformElement(const DrawOrderer::OrderStruct& e
 		worldToScreenY(elem.y1, canvasHeight),
 		worldToScreenX(elem.x2),
 		worldToScreenY(elem.y2, canvasHeight),
-	   //	elem.i,
-	   // elem.j,
 		worldToScale(elem.i),
 		worldToScale(elem.j),
         elem.Type
@@ -322,14 +327,12 @@ bool GraphicsBuilder::isPointOnElement(int index, int screenX, int screenY, doub
 }
 
 // Поиск элементов под курсором
-std::vector<int> GraphicsBuilder::findElementsAt(int screenX, int screenY, double tolerance) {
-    std::vector<int> result;
-    for (int i = 0; i < static_cast<int>(m_source.size()); ++i) {
-        if (isPointOnElement(i, screenX, screenY, tolerance)) {
-            result.push_back(i);
+void GraphicsBuilder::findElementsAt(int screenX, int screenY, double tolerance) {
+	for (int i = 0; i < static_cast<int>(m_source.size()); ++i) {
+		if (isPointOnElement(i, screenX, screenY, tolerance)) {
+			selectElement(i);
         }
     }
-    return result;
 }
 
 // Отрисовка с выделением выбранных элементов
@@ -380,4 +383,5 @@ void GraphicsBuilder::paint(TCanvas* canvas, const TRect& drawArea) {
     }
 }
 
+///////////////////////////////////
 

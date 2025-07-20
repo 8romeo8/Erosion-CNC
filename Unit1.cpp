@@ -38,31 +38,11 @@ bool isInitialized = false;
 __fastcall TForm1::TForm1(TComponent* Owner)
 	: TForm(Owner)
 {
+    SetWindowLong(ToolPath->Parent->Handle, GWL_EXSTYLE,
+	GetWindowLong(ToolPath->Parent->Handle, GWL_EXSTYLE) | WS_EX_COMPOSITED);
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TForm1::BitBtn3Click(TObject *Sender)
-{
-	DxfParser parser;
-
-	OpenDialog1->FileName = "";
-	OpenDialog1->Execute();
-
-	AnsiString ansiPath = OpenDialog1->FileName;
-	parser.parse(ansiPath.c_str(), &ToolDrawConvertDXF);
-
-	// Упорядочиваем элементы
-	orderer = new DrawOrderer(ToolDrawConvertDXF);
-	orderedPath = orderer->createOrderedPath();
-
-	// Удаляем старый builder, если был
-	delete builder;
-    builder = new GraphicsBuilder(orderedPath);
-	isInitialized = false; // Сбрасываем флаг инициализации
-
-  	ToolPathDraw->Invalidate();
-}
-//---------------------------------------------------------------------------
 void __fastcall TForm1::ToolPathDrawPaint(TObject *Sender)
 {
 
@@ -90,19 +70,9 @@ void __fastcall TForm1::FormDestroy(TObject *Sender)
 void __fastcall TForm1::ToolPathDrawMouseDown(TObject *Sender, TMouseButton Button,
           TShiftState Shift, int X, int Y)
 {
-	if (builder != nullptr) {
-             builder->mouseDown(X, Y);
-			 if (Button == mbLeft) {
-				// Поиск элементов под курсором
-				auto elements = builder->findElementsAt(X, Y);
-
-				if (!elements.empty()) {
-					// Выделяем первый найденный элемент
-					builder->clearSelection();
-					builder->selectElement(elements[0]);
-					ToolPathDraw->Invalidate(); // Перерисовываем
-				}
-			}
+	if (builder != nullptr && Button == mbLeft) {
+			 builder->mouseDown(X, Y);
+			 ToolPathDraw->Invalidate(); // Перерисовываем
 	}
 }
 //---------------------------------------------------------------------------
@@ -136,4 +106,63 @@ void __fastcall TForm1::FormMouseWheel(TObject *Sender, TShiftState Shift, int W
     }
 }
 //---------------------------------------------------------------------------
+
+void __fastcall TForm1::FormCreate(TObject *Sender)
+{
+	//Подрубим двойнуюу буфферизацию отрисовке
+    ToolPath->Parent->DoubleBuffered = true;
+}
+//---------------------------------------------------------------------------
+//Таймер отвечает за активность кнопок
+void __fastcall TForm1::UpdateDrawTimer(TObject *Sender)
+{
+	// Получаем текущее состояние
+	Status currentState;
+	if(builder)
+	{
+		currentState = builder->machineState.getState();
+
+		// Получаем битовую маску для этого состояния
+		uint16_t buttonMask = builder->machineState.getButtonMask(currentState);
+
+		BtnLoadFile->Enabled 		= (buttonMask & State::BTN_LOAD_FILE) != 0;
+		BtnZero->Enabled 			= (buttonMask & State::BTN_ZERO) != 0;
+		BtnGoKadr->Enabled          = (buttonMask & State::BTN_GO_KADR) != 0;
+		BtnSdvig->Enabled           = (buttonMask & State::BTN_SDVIG) != 0;
+		BtnStopAngle->Enabled       = (buttonMask & State::BTN_STOP_ANGLE) != 0;
+		BtnBeckWard->Enabled        = (buttonMask & State::BTN_BACKWARD) != 0;
+		BtnForWadr->Enabled         = (buttonMask & State::BTN_FORWARD) != 0;
+		BtnOnOffSoj->Enabled        = (buttonMask & State::BTN_ON_OFF_SOJ) != 0;
+		BtnOnOffGeneric->Enabled    = (buttonMask & State::BTN_ON_OFF_GENERIC) != 0;
+		BtnBarabanOnOff->Enabled    = (buttonMask & State::BTN_BARABAN_ON_OFF) != 0;
+		BtnStop->Enabled            = (buttonMask & State::BTN_STOP) != 0;
+		BtnStart->Enabled           = (buttonMask & State::BTN_START) != 0;
+	}
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::BtnLoadFileClick(TObject *Sender)
+{
+	DxfParser parser;
+
+	OpenDialog1->FileName = "";
+	OpenDialog1->Execute();
+
+	AnsiString ansiPath = OpenDialog1->FileName;
+	parser.parse(ansiPath.c_str(), &ToolDrawConvertDXF);
+
+	// Упорядочиваем элементы
+	orderer = new DrawOrderer(ToolDrawConvertDXF);
+	orderedPath = orderer->createOrderedPath();
+
+	// Удаляем старый builder, если был
+	delete builder;
+	builder = new GraphicsBuilder(orderedPath);
+	isInitialized = false; // Сбрасываем флаг инициализации
+
+	ToolPathDraw->Invalidate();
+}
+//---------------------------------------------------------------------------
+
 
