@@ -24,18 +24,21 @@ struct DrawSettings {
     double xOffset = 0.0;    // Смещение по X (пиксели)
     double yOffset = 0.0;    // Смещение по Y (пиксели)
     double scale = 1.0;      // Масштаб (пикселей на единицу)
-    TColor lineColor = clBlack;
-    TColor arcColor = clBlue;
-    TColor circleColor = clRed;
+	TColor lineColor = clBlack;
+	TColor arcColor = clBlack;
+    TColor circleColor = clBlack;
 	TColor backgroundColor = clWhite;
+	TColor highlightColor = clRed;
+    TColor pathColor = clGreen;
 	TRect drawArea; //Размеры отображаемой области
 };
 
 class GraphicsBuilder {
 public:
-    GraphicsBuilder(const std::vector<DrawOrderer::OrderStruct>& source);
-    State machineState; //Класс сотояний станка
-    // Установка новых настроек
+	GraphicsBuilder(const std::vector<DrawOrderer::OrderStruct>& source);
+	DrawSettings m_settings;
+	State* machineState = new State(&m_settings); //Класс сотояний станка
+	// Установка новых настроек
     void setSettings(const DrawSettings& settings);
     DrawSettings getSettings() const;
     void updateTransformedData();
@@ -58,9 +61,9 @@ public:
 	bool isPointOnElement(int index, int screenX, int screenY, double tolerance = 5.0) const;
 
 private:
-    const std::vector<DrawOrderer::OrderStruct>& m_source;
-    std::vector<DrawToolLine> m_transformed;
-    DrawSettings m_settings;
+	const std::vector<DrawOrderer::OrderStruct>& m_source;
+	std::vector<DrawToolLine> m_transformed;
+
     bool m_dragging = false;
     int m_lastX = 0, m_lastY = 0;
 
@@ -78,6 +81,18 @@ private:
     // Преобразование экранных координат в мировые
     double screenToWorldX(int screenX) const;
 	double screenToWorldY(int screenY) const;
+
+    	//Структура для отображения точки захода
+	struct FoundPoint {
+        int elementIndex = -1;
+        int pointType = -1; // 0: start, 1: end, 2: center
+        double worldX = 0.0;
+        double worldY = 0.0;
+		bool valid = false;
+	};
+
+	FoundPoint findClosestPoint(int screenX, int screenY, double tolerance = 10.0) const;
+	FoundPoint m_highlightedPoint;
 };
 
 #endif // GRAPHICSBUILDER_H

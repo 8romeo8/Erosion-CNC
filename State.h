@@ -4,8 +4,10 @@
 #include <vector>
 #include <map>
 
+
 /* 20.07.2025    8romeo8@list.ru       (+79780592624)
    Класс для хранения состояния машины и переходов между состояниями.
+   Дополнительно этот класс отображает кнопки на Canvas.
    Описание состояний:
 
    DefaultState - Состояние после загрузки и парсинга dxf файла.
@@ -48,35 +50,52 @@ enum Status {
     RapidMoveState
 };
 
+struct DrawSettings;
+
 class State {
 private:
     Status currentState;
 	std::map<Status, std::vector<Status>> validTransitions;
-     // Карта масок для каждого состояния
-    static const std::map<Status, uint16_t> stateButtonMasks;
+
+	DrawSettings *m_settings;
+
+	 // Карта масок для каждого состояния
+	static const std::map<Status, uint16_t> stateButtonMasks;
+
+	TRect buttonRect; // Храним область кнопки
+	bool isHovered;   // Флаг наведения мыши
 
     void initializeTransitions() {
         // Инициализация допустимых переходов между состояниями
         validTransitions[DefaultState] = {PointSelectionState};
-        validTransitions[PointSelectionState] = {PathSelectionState, DefaultState};
-        validTransitions[PathSelectionState] = {EquidistantSelectionState, PointSelectionState};
-        validTransitions[EquidistantSelectionState] = {PathGenerationState, PathSelectionState};
-        validTransitions[PathGenerationState] = {ReadyToStartState, EquidistantSelectionState};
-        validTransitions[ReadyToStartState] = {ZeroCalibrationState, RapidMoveState, PathGenerationState};
-        validTransitions[ZeroCalibrationState] = {ReadyToStartState, RunningWithCoolantState, DryRunningState};
+		validTransitions[PointSelectionState] = {PointSelectionState,PathSelectionState, DefaultState};
+		validTransitions[PathSelectionState] = {PointSelectionState,EquidistantSelectionState, PointSelectionState};
+		validTransitions[EquidistantSelectionState] = {PointSelectionState,PathGenerationState, PathSelectionState};
+		validTransitions[PathGenerationState] = {PointSelectionState,ReadyToStartState, EquidistantSelectionState};
+		validTransitions[ReadyToStartState] = {PointSelectionState,ZeroCalibrationState, RapidMoveState, PathGenerationState};
+		validTransitions[ZeroCalibrationState] = {PointSelectionState,ReadyToStartState, RunningWithCoolantState, DryRunningState};
         validTransitions[RunningWithCoolantState] = {PausedState, EndProgramState, DryRunningState};
         validTransitions[DryRunningState] = {PausedState, EndProgramState, RunningWithCoolantState};
-        validTransitions[PausedState] = {RunningWithCoolantState, DryRunningState, ReadyToStartState, EndProgramState};
-        validTransitions[EndProgramState] = {ReadyToStartState, DefaultState};
+		validTransitions[PausedState] = {RunningWithCoolantState, DryRunningState, ReadyToStartState, EndProgramState};
+		validTransitions[EndProgramState] = {PointSelectionState,ReadyToStartState, DefaultState};
         validTransitions[RewindState] = {PausedState, RunningWithCoolantState, DryRunningState};
         validTransitions[RapidMoveState] = {ReadyToStartState, ZeroCalibrationState};
-    }
+	}
 
 public:
-	State() : currentState(DefaultState){
-        initializeTransitions();
-	};
-	void onPaint(TCanvas Canvas);
+
+	State::State(DrawSettings *set)
+		: currentState(DefaultState),
+        isHovered(false),
+      buttonRect(0, 0, 0, 0)
+	{
+		initializeTransitions();
+        m_settings = set;
+	}
+
+	~State() {  }  // Не забываем очищать память
+
+	void onPaint(TCanvas *Canvas, const TRect& drawArea);
 	Status getState() const ;
 	bool setState(Status newState);
 	bool isValidTransition(Status newState) const;

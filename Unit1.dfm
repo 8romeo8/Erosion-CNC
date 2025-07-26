@@ -416,6 +416,7 @@ object Form1: TForm1
     Height = 47
     Anchors = [akTop, akRight]
     Caption = #1054#1073#1085#1091#1083#1080#1090#1100
+    Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -19
@@ -430,6 +431,7 @@ object Form1: TForm1
     Height = 47
     Anchors = [akTop, akRight]
     Caption = #8470' '#1050#1072#1076#1088#1072
+    Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -19
@@ -444,6 +446,7 @@ object Form1: TForm1
     Height = 47
     Anchors = [akTop, akRight]
     Caption = #1055#1077#1088#1077#1084#1077#1089#1090#1080#1090#1100
+    Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -19
@@ -458,6 +461,7 @@ object Form1: TForm1
     Height = 47
     Anchors = [akTop, akRight]
     Caption = #1057#1090#1086#1087' '#1085#1072' '#1091#1075#1083#1072#1093
+    Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -19
@@ -472,6 +476,7 @@ object Form1: TForm1
     Height = 47
     Anchors = [akTop, akRight]
     Caption = #1053#1072#1079#1072#1076' '#1087#1086' '#1090#1088'.'
+    Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -19
@@ -486,6 +491,7 @@ object Form1: TForm1
     Height = 47
     Anchors = [akTop, akRight]
     Caption = #1042#1087#1077#1088#1076' '#1087#1086' '#1090#1088'.'
+    Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -19
@@ -500,6 +506,7 @@ object Form1: TForm1
     Height = 47
     Anchors = [akTop, akRight]
     Caption = #1057#1086#1078' '#1074#1082'/'#1074#1099#1082#1083
+    Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -19
@@ -514,6 +521,7 @@ object Form1: TForm1
     Height = 47
     Anchors = [akTop, akRight]
     Caption = #1043#1077#1085#1077#1088#1072#1090#1086#1088' '#1074#1082
+    Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -19
@@ -528,6 +536,7 @@ object Form1: TForm1
     Height = 58
     Anchors = [akRight, akBottom]
     Caption = #1057#1090#1086#1087
+    Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clMaroon
     Font.Height = -27
@@ -542,6 +551,7 @@ object Form1: TForm1
     Height = 58
     Anchors = [akRight, akBottom]
     Caption = #1057#1090#1072#1088#1090
+    Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clGreen
     Font.Height = -27
@@ -556,6 +566,7 @@ object Form1: TForm1
     Height = 47
     Anchors = [akTop, akRight]
     Caption = #1041#1072#1088#1072#1073#1072#1085' '#1074#1082'.'
+    Enabled = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -19

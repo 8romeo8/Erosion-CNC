@@ -1,0 +1,213 @@
+	#include "State.h"
+    #include "GraphicsBuilder.h"
+
+
+void State::onPaint(TCanvas* Canvas, const TRect& drawArea) {
+    //Отрисовываем кнопку выбора точки входа
+	if(currentState == DefaultState) {
+        int canvasWidth = drawArea.Width();
+        int canvasHeight = drawArea.Height();
+
+        // Задаем параметры кнопки
+        int buttonWidth = 200;
+        int buttonHeight = 50;
+        int leftMargin = 50;
+        int bottomMargin = 60;
+
+        // Сохраняем область кнопки
+        buttonRect = TRect(
+            leftMargin,
+            canvasHeight - bottomMargin - buttonHeight,
+            leftMargin + buttonWidth,
+            canvasHeight - bottomMargin
+        );
+
+        // Отрисовываем прямоугольник кнопки с учетом наведения
+        Canvas->Brush->Color = isHovered ? clBtnHighlight : clBtnFace;
+        Canvas->Pen->Color = clBlack;
+        Canvas->Rectangle(buttonRect);
+
+        // Настраиваем шрифт
+        Canvas->Font->Name = "Tahoma";
+        Canvas->Font->Size = 10;
+        Canvas->Font->Style = TFontStyles() << fsBold;
+        Canvas->Font->Color = clBlack;
+
+        // Вычисляем позицию текста
+        int textWidth = Canvas->TextWidth("Указать точку входа");
+        int textHeight = Canvas->TextHeight("Указать точку входа");
+        int textX = buttonRect.Left + (buttonWidth - textWidth) / 2;
+        int textY = buttonRect.Top + (buttonHeight - textHeight) / 2;
+
+        Canvas->TextOut(textX, textY, "Указать точку входа");
+	}else
+	//Режим выбора захода
+	if(currentState == PointSelectionState)
+	{
+      int canvasWidth = drawArea.Width();
+        int canvasHeight = drawArea.Height();
+
+        // Задаем параметры кнопки
+        int buttonWidth = 200;
+        int buttonHeight = 50;
+        int leftMargin = 50;
+        int bottomMargin = 60;
+
+        // Сохраняем область кнопки
+        buttonRect = TRect(
+            leftMargin,
+            canvasHeight - bottomMargin - buttonHeight,
+            leftMargin + buttonWidth,
+            canvasHeight - bottomMargin
+        );
+
+        // Отрисовываем прямоугольник кнопки с учетом наведения
+        Canvas->Brush->Color = clBtnHighlight;
+        Canvas->Pen->Color = clRed;
+        Canvas->Rectangle(buttonRect);
+
+        // Настраиваем шрифт
+        Canvas->Font->Name = "Tahoma";
+        Canvas->Font->Size = 10;
+        Canvas->Font->Style = TFontStyles() << fsBold;
+        Canvas->Font->Color = clBlack;
+
+		// Вычисляем позицию текста
+		String str = "Укажите точку входа";
+		int textWidth = Canvas->TextWidth(str);
+		int textHeight = Canvas->TextHeight(str);
+        int textX = buttonRect.Left + (buttonWidth - textWidth) / 2;
+        int textY = buttonRect.Top + (buttonHeight - textHeight) / 2;
+
+		Canvas->TextOut(textX, textY, str);
+
+    }
+}
+
+    // Возвращает текущий статус
+	Status State::getState() const {
+		return currentState;
+    }
+
+	// Установка нового состояния с проверкой валидности перехода
+	bool State::setState(Status newState) {
+        if (isValidTransition(newState)) {
+            currentState = newState;
+            return true;
+        }
+        return false;
+    }
+
+    // Проверка возможности перехода в указанное состояние
+	bool State::isValidTransition(Status newState) const {
+        auto it = validTransitions.find(currentState);
+        if (it != validTransitions.end()) {
+            const std::vector<Status>& allowedStates = it->second;
+            return std::find(allowedStates.begin(), allowedStates.end(), newState) != allowedStates.end();
+        }
+        return false;
+    }
+
+void State::isMouseDown(int x, int y) {
+    if(currentState == DefaultState && buttonRect.Contains(TPoint(x, y))) {
+        // Обработка нажатия на кнопку
+		currentState = PointSelectionState;
+		isHovered = false;
+    }
+}
+
+void State::isMouseMove(int x, int y) {
+	if(currentState == DefaultState) {
+        // Проверяем, находится ли курсор над кнопкой
+        bool nowHovered = buttonRect.Contains(TPoint(x, y));
+
+        // Если состояние изменилось - нужно перерисовать
+        if(nowHovered != isHovered) {
+			isHovered = nowHovered;
+        }
+	}else
+	//Состояние выбора захода - подсвечиваем все линии
+	if(currentState == PointSelectionState)
+	{
+
+    }
+
+
+}
+
+const std::map<Status, uint16_t> State::stateButtonMasks = {
+    {DefaultState,
+        State::BTN_LOAD_FILE},
+
+    {PointSelectionState,
+        State::BTN_LOAD_FILE},
+
+	{PathSelectionState,
+        State::BTN_ZERO | State::BTN_START | State::BTN_ON_OFF_SOJ},
+
+	{EquidistantSelectionState,
+		State::BTN_STOP | State::BTN_ON_OFF_SOJ},
+
+	{PathGenerationState,
+		State::BTN_STOP | State::BTN_ON_OFF_SOJ},
+
+	{ReadyToStartState,
+		State::BTN_STOP | State::BTN_ON_OFF_SOJ},
+
+	{ZeroCalibrationState,
+		State::BTN_STOP | State::BTN_ON_OFF_SOJ},
+
+	{RunningWithCoolantState,
+		State::BTN_STOP | State::BTN_ON_OFF_SOJ},
+
+   {DryRunningState,
+		State::BTN_STOP | State::BTN_ON_OFF_SOJ},
+
+   {PausedState,
+		State::BTN_STOP | State::BTN_ON_OFF_SOJ},
+
+   {EndProgramState,
+		State::BTN_STOP | State::BTN_ON_OFF_SOJ},
+
+   {RewindState,
+		State::BTN_STOP | State::BTN_ON_OFF_SOJ},
+
+   {RapidMoveState,
+		State::BTN_STOP | State::BTN_ON_OFF_SOJ}
+};
+
+
+State::FoundPoint State::findClosestPoint(int screenX, int screenY, double tolerance) const {
+	FoundPoint result;
+    double minDistance = std::numeric_limits<double>::max();
+	const double tol = tolerance / m_settings->scale;
+	 /*
+	for (size_t i = 0; i < m_source.size(); ++i) {
+        const auto& elem = m_source[i];
+        double worldX = screenToWorldX(screenX);
+        double worldY = screenToWorldY(screenY);
+
+        // Проверка точек начала и конца
+        auto checkPoint = [&](double x, double y, int pointType) {
+            double dist = std::hypot(worldX - x, worldY - y);
+            if (dist < minDistance && dist <= tol) {
+                minDistance = dist;
+                result = {static_cast<int>(i), pointType, x, y, true};
+            }
+        };
+
+        // Для всех элементов проверяем начальную и конечную точки
+        checkPoint(elem.x1, elem.y1, 0);
+        checkPoint(elem.x2, elem.y2, 1);
+
+        // Для дуг и окружностей проверяем центр
+        if (elem.Type == 2 || elem.Type == 3) {
+            double centerX = elem.x1 + elem.i;
+            double centerY = elem.y1 + elem.j;
+            checkPoint(centerX, centerY, 2);
+        }
+	}  */
+    return result;
+}
+
+

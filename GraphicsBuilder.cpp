@@ -37,7 +37,7 @@ void GraphicsBuilder::mouseDown(int x, int y) {
 
 	clearSelection();
 	findElementsAt(x, y);
-    machineState.isMouseDown(x,y);
+	machineState->isMouseDown(x,y);
 }
 
 void GraphicsBuilder::mouseMove(int x, int y) {
@@ -48,9 +48,13 @@ void GraphicsBuilder::mouseMove(int x, int y) {
         m_lastX = x;
         m_lastY = y;
 		updateTransformedData();
-
-        machineState.isMouseMove(x,y);
 	}
+	machineState->isMouseMove(x,y);
+	//Если состояние выбора точки захода
+	if(machineState->getState() == PointSelectionState)
+	{
+		  m_highlightedPoint = findClosestPoint(x,y);
+    }
 }
 
 void GraphicsBuilder::mouseUp() {
@@ -337,7 +341,7 @@ void GraphicsBuilder::findElementsAt(int screenX, int screenY, double tolerance)
 
 // Отрисовка с выделением выбранных элементов
 void GraphicsBuilder::paint(TCanvas* canvas, const TRect& drawArea) {
-    if (!canvas) return;
+	if (!canvas) return;
 
     // Обновляем область рисования
     m_settings.drawArea = drawArea;
@@ -380,8 +384,62 @@ void GraphicsBuilder::paint(TCanvas* canvas, const TRect& drawArea) {
         } else if (m_transformed[i].Type == 3) {
             drawCircle(canvas, m_transformed[i]);
         }
-    }
+	}
+	if(machineState->getState() == PointSelectionState)
+	{//Состояния отображения выбора точек
+		 if(m_highlightedPoint.valid)
+		 {
+				double screenX = worldToScreenX(m_highlightedPoint.worldX);
+				double screenY = worldToScreenY(m_highlightedPoint.worldY,m_settings.drawArea.Height());
+
+				canvas->Pen->Color = m_settings.highlightColor;
+                canvas->Brush->Color = m_settings.highlightColor;
+				canvas->Brush->Style = bsSolid;
+			canvas->Ellipse(
+				static_cast<int>(screenX - 8),
+				static_cast<int>(screenY - 8),
+				static_cast<int>(screenX + 8),
+				static_cast<int>(screenY + 8)
+			);
+		 }
+
+	}
+    //Отображаем кнопки
+	machineState->onPaint(canvas, drawArea);
+
 }
 
 ///////////////////////////////////
 
+GraphicsBuilder::FoundPoint GraphicsBuilder::findClosestPoint(int screenX, int screenY, double tolerance) const {
+	FoundPoint result;
+    double minDistance = std::numeric_limits<double>::max();
+	const double tol = tolerance / m_settings.scale;
+
+	for (size_t i = 0; i < m_source.size(); ++i) {
+        const auto& elem = m_source[i];
+        double worldX = screenToWorldX(screenX);
+        double worldY = screenToWorldY(screenY);
+
+        // Проверка точек начала и конца
+        auto checkPoint = [&](double x, double y, int pointType) {
+            double dist = std::hypot(worldX - x, worldY - y);
+            if (dist < minDistance && dist <= tol) {
+                minDistance = dist;
+                result = {static_cast<int>(i), pointType, x, y, true};
+            }
+        };
+
+        // Для всех элементов проверяем начальную и конечную точки
+        checkPoint(elem.x1, elem.y1, 0);
+        checkPoint(elem.x2, elem.y2, 1);
+
+        // Для дуг и окружностей проверяем центр
+        if (elem.Type == 2 || elem.Type == 3) {
+            double centerX = elem.x1 + elem.i;
+            double centerY = elem.y1 + elem.j;
+            checkPoint(centerX, centerY, 2);
+        }
+	}
+    return result;
+}

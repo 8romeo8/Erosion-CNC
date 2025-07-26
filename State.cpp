@@ -1,16 +1,95 @@
-    #include "State.h"
+	#include "State.h"
+    #include "GraphicsBuilder.h"
 
-    // Дополнительная отрисовка в зависимости от состояния машины
-	void State::onPaint(TCanvas Canvas) {
-        // Реализация отрисовки в зависимости от currentState
+
+void State::onPaint(TCanvas* Canvas, const TRect& drawArea) {
+    //Отрисовываем кнопку выбора точки входа
+	if(currentState == DefaultState) {
+        int canvasWidth = drawArea.Width();
+        int canvasHeight = drawArea.Height();
+
+        // Задаем параметры кнопки
+        int buttonWidth = 200;
+        int buttonHeight = 50;
+        int leftMargin = 50;
+        int bottomMargin = 60;
+
+        // Сохраняем область кнопки
+        buttonRect = TRect(
+            leftMargin,
+            canvasHeight - bottomMargin - buttonHeight,
+            leftMargin + buttonWidth,
+            canvasHeight - bottomMargin
+        );
+
+        // Отрисовываем прямоугольник кнопки с учетом наведения
+        Canvas->Brush->Color = isHovered ? clBtnHighlight : clBtnFace;
+        Canvas->Pen->Color = clBlack;
+        Canvas->Rectangle(buttonRect);
+
+        // Настраиваем шрифт
+        Canvas->Font->Name = "Tahoma";
+        Canvas->Font->Size = 10;
+        Canvas->Font->Style = TFontStyles() << fsBold;
+        Canvas->Font->Color = clBlack;
+
+        // Вычисляем позицию текста
+        int textWidth = Canvas->TextWidth("Указать точку входа");
+        int textHeight = Canvas->TextHeight("Указать точку входа");
+        int textX = buttonRect.Left + (buttonWidth - textWidth) / 2;
+        int textY = buttonRect.Top + (buttonHeight - textHeight) / 2;
+
+        Canvas->TextOut(textX, textY, "Указать точку входа");
+	}else
+	//Режим выбора захода
+	if(currentState == PointSelectionState)
+	{
+      int canvasWidth = drawArea.Width();
+        int canvasHeight = drawArea.Height();
+
+        // Задаем параметры кнопки
+        int buttonWidth = 200;
+        int buttonHeight = 50;
+        int leftMargin = 50;
+        int bottomMargin = 60;
+
+        // Сохраняем область кнопки
+        buttonRect = TRect(
+            leftMargin,
+            canvasHeight - bottomMargin - buttonHeight,
+            leftMargin + buttonWidth,
+            canvasHeight - bottomMargin
+        );
+
+        // Отрисовываем прямоугольник кнопки с учетом наведения
+        Canvas->Brush->Color = clBtnHighlight;
+		Canvas->Pen->Color = clRed;
+        Canvas->Rectangle(buttonRect);
+
+        // Настраиваем шрифт
+        Canvas->Font->Name = "Tahoma";
+		Canvas->Font->Size = 10;
+        Canvas->Font->Style = TFontStyles() << fsBold;
+		Canvas->Font->Color = clRed;
+
+		// Вычисляем позицию текста
+		String str = "Укажите точку входа";
+		int textWidth = Canvas->TextWidth(str);
+		int textHeight = Canvas->TextHeight(str);
+        int textX = buttonRect.Left + (buttonWidth - textWidth) / 2;
+        int textY = buttonRect.Top + (buttonHeight - textHeight) / 2;
+
+		Canvas->TextOut(textX, textY, str);
+
     }
+}
 
     // Возвращает текущий статус
 	Status State::getState() const {
-        return currentState;
+		return currentState;
     }
 
-    // Установка нового состояния с проверкой валидности перехода
+	// Установка нового состояния с проверкой валидности перехода
 	bool State::setState(Status newState) {
         if (isValidTransition(newState)) {
             currentState = newState;
@@ -29,16 +108,32 @@
         return false;
     }
 
-	// Обработка нажатия мыши (может вызывать переход между состояниями)
-	void State::isMouseDown(int x, int y) {
-        // Реализация обработки клика в зависимости от currentState
-	}
+void State::isMouseDown(int x, int y) {
+    if(currentState == DefaultState && buttonRect.Contains(TPoint(x, y))) {
+        // Обработка нажатия на кнопку
+		currentState = PointSelectionState;
+		isHovered = false;
+    }
+}
 
-    //Обработка перемещения мыши
-	void State::isMouseMove(int x, int y)
+void State::isMouseMove(int x, int y) {
+	if(currentState == DefaultState) {
+        // Проверяем, находится ли курсор над кнопкой
+        bool nowHovered = buttonRect.Contains(TPoint(x, y));
+
+        // Если состояние изменилось - нужно перерисовать
+        if(nowHovered != isHovered) {
+			isHovered = nowHovered;
+        }
+	}else
+	//Состояние выбора захода - подсвечиваем все линии
+	if(currentState == PointSelectionState)
 	{
 
-	}
+    }
+
+
+}
 
 const std::map<Status, uint16_t> State::stateButtonMasks = {
     {DefaultState,
@@ -80,3 +175,6 @@ const std::map<Status, uint16_t> State::stateButtonMasks = {
    {RapidMoveState,
 		State::BTN_STOP | State::BTN_ON_OFF_SOJ}
 };
+
+
+

@@ -120,10 +120,10 @@ void __fastcall TForm1::UpdateDrawTimer(TObject *Sender)
 	Status currentState;
 	if(builder)
 	{
-		currentState = builder->machineState.getState();
+		currentState = builder->machineState->getState();
 
 		// Получаем битовую маску для этого состояния
-		uint16_t buttonMask = builder->machineState.getButtonMask(currentState);
+		uint16_t buttonMask = builder->machineState->getButtonMask(currentState);
 
 		BtnLoadFile->Enabled 		= (buttonMask & State::BTN_LOAD_FILE) != 0;
 		BtnZero->Enabled 			= (buttonMask & State::BTN_ZERO) != 0;
@@ -144,24 +144,39 @@ void __fastcall TForm1::UpdateDrawTimer(TObject *Sender)
 
 void __fastcall TForm1::BtnLoadFileClick(TObject *Sender)
 {
-	DxfParser parser;
 
-	OpenDialog1->FileName = "";
-	OpenDialog1->Execute();
+		 DxfParser parser;
 
-	AnsiString ansiPath = OpenDialog1->FileName;
-	parser.parse(ansiPath.c_str(), &ToolDrawConvertDXF);
+		OpenDialog1->FileName = ""; // Очищаем имя файла перед открытием диалога
 
-	// Упорядочиваем элементы
-	orderer = new DrawOrderer(ToolDrawConvertDXF);
-	orderedPath = orderer->createOrderedPath();
+			// Проверяем результат Execute()
+			if (OpenDialog1->Execute()) // Если пользователь выбрал файл и нажал "Открыть"
+			{
+				AnsiString ansiPath = OpenDialog1->FileName;
 
-	// Удаляем старый builder, если был
-	delete builder;
-	builder = new GraphicsBuilder(orderedPath);
-	isInitialized = false; // Сбрасываем флаг инициализации
+				// Проверяем, что имя файла не пустое (дополнительная страховка)
+				if (!ansiPath.IsEmpty())
+				{
+					parser.parse(ansiPath.c_str(), &ToolDrawConvertDXF);
 
-	ToolPathDraw->Invalidate();
+					// Упорядочиваем элементы
+					orderer = new DrawOrderer(ToolDrawConvertDXF);
+					orderedPath = orderer->createOrderedPath();
+
+					// Удаляем старый builder, если был
+					delete builder;
+					builder = new GraphicsBuilder(orderedPath);
+					isInitialized = false; // Сбрасываем флаг инициализации
+
+					ToolPathDraw->Invalidate();
+				}
+			}
+			else // Если пользователь нажал "Отмена"
+			{
+				// Можно вывести сообщение или выполнить другие действия
+				// ShowMessage("Выбор файла отменен");
+			}
+
 }
 //---------------------------------------------------------------------------
 
